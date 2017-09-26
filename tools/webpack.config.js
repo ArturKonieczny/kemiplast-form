@@ -19,7 +19,7 @@ const assetsPath = 'assets';
 const dataPath = 'data';
 
 const config = {
-  entry: path.join(sourcePath, 'index.jsx'),
+  entry: path.join(sourcePath, 'index.js'),
   output: {
     path: distPath,
     filename: path.join(assetsPath, `[name]${nameSuffix}.js`)
