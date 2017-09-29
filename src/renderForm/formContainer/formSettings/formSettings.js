@@ -1,93 +1,93 @@
 export const formSettings = [
   {
     fieldId: 'ammount',
-    fieldValue: '0',
+    fieldValue: '',
     validation: ['isEmpty', 'isInteger', 'isPositive'],
-    valid: true,
+    valid: false,
     isRequired: true
   },
   {
     fieldId: 'delName',
     fieldValue: '',
     validation: ['isEmpty'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'delCity',
     fieldValue: '',
     validation: ['isEmpty'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'delPostCode',
     fieldValue: '',
     validation: ['isEmpty', 'isPostCode'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'delStreet',
     fieldValue: '',
     validation: ['isEmpty'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'fvName',
     fieldValue: '',
     validation: ['isEmpty'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'nip',
     fieldValue: '',
     validation: ['isEmpty', 'isNip'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'fvCity',
     fieldValue: '',
     validation: ['isEmpty'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'fvPostCode',
     fieldValue: '',
     validation: ['isEmpty', 'isPostCode'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'fvStreet',
     fieldValue: '',
     validation: ['isEmpty'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'notes',
-    fieldValue: '0',
+    fieldValue: '',
     validation: ['isEmpty', 'isLongEnougn'],
-    valid: true,
+    valid: false,
     isRequired: false
   },
   {
     fieldId: 'phone',
     fieldValue: '',
     validation: ['isEmpty', 'isInteger'],
-    valid: true,
+    valid: false,
     isRequired: true
   },
   {
     fieldId: 'email',
-    fieldValue: '0',
+    fieldValue: '',
     validation: ['isEmpty', 'isEmail'],
-    valid: true,
+    valid: false,
     isRequired: true
   }
 ];
