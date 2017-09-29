@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import FormValidator from 'formvalidator';
 import {SubmitButton} from './components/submitbutton.jsx';
+import {Selector} from './components/selector.jsx';
 import {formSettings} from './formSettings/formSettings';
 import {delivery} from './formSettings/delivery';
 
@@ -120,6 +121,7 @@ export default class FormContainer extends React.Component {
       <form id="qb_wb_lists_contact" className="qbf" method="post">
         <table id="qb_wb_lists_contact_container" className="qbf-container">
           <tbody>
+            <Selector data={this.props.formData} label="Wybierz produkt:" fieldName="product" onChange={this.changeProduct}/>
             <SubmitButton form={this.state.form} submit={this.validateForm}/>
           </tbody>
         </table>
