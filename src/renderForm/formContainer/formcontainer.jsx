@@ -2,18 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import FormValidator from 'formvalidator';
 import {SubmitButton} from './components/submitbutton.jsx';
+import {ProductSelector} from './components/productselector.jsx';
 import {Selector} from './components/selector.jsx';
 import {formSettings} from './formSettings/formSettings';
 import {delivery} from './formSettings/delivery';
+import {Input} from './components/input.jsx';
 
 export default class FormContainer extends React.Component {
   constructor(props) {
     super(props);
+    const initialProduct = this.props.formData.chosenProduct || 1;
     this.vForm = new FormValidator(formSettings);
     this.state = {
-      product: this.props.chosenProduct,
-      price: '',
-      weight: '',
+      product: initialProduct,
+      box: this.props.formData[initialProduct].packages[0].id,
+      price: this.props.formData[initialProduct].packages[0].price,
+      weight: this.props.formData[initialProduct].packages[0].weight,
       ammount: true,
       ammountValue: '',
       delivery: 'personal',
@@ -45,7 +49,12 @@ export default class FormContainer extends React.Component {
   }
 
   changeProduct(value) {
-    this.setState({'product': value});
+    this.setState({
+      'product': value,
+      'box': this.props.formData[value].packages[0].id,
+      'price': this.props.formData[value].packages[0].price,
+      'weight': this.props.formData[value].packages[0].weight
+    });
   }
 
   changeBox(value) {
@@ -75,10 +84,10 @@ export default class FormContainer extends React.Component {
     const newState = {};
 
     newState[fieldName] = field.get('valid');
-    newState.form = this.vForm.checkForm();
+    newState.form = this.vForm.validateForm();
 
     if (fieldName === 'ammount') {
-      newState.form[fieldName + 'Value'] = value;
+      newState[fieldName + 'Value'] = value;
     }
 
     this.setState(newState);
@@ -121,7 +130,11 @@ export default class FormContainer extends React.Component {
       <form id="qb_wb_lists_contact" className="qbf" method="post">
         <table id="qb_wb_lists_contact_container" className="qbf-container">
           <tbody>
-            <Selector data={this.props.formData} label="Wybierz produkt:" fieldName="product" onChange={this.changeProduct}/>
+            <ProductSelector data={this.props.formData} fieldName="product" onChange={this.changeProduct}/>
+            <Selector data={this.props.formData[this.state.product].packages} fieldName="box" onChange={this.changeBox}/>
+            <Input fieldName="ammount" type="text" onChange={this.validateField} valid={this.state.ammount} />
+            <Input fieldName="phone" type="text" onChange={this.validateField} valid={this.state.phone} />
+            <Input fieldName="email" type="text" onChange={this.validateField} valid={this.state.email} />
             <SubmitButton form={this.state.form} submit={this.validateForm}/>
           </tbody>
         </table>

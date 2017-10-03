@@ -19,7 +19,7 @@ export default function getFormData() {
       id: product.package_id,
       price: product.price,
       weight: product.weight,
-      label: product.option_value
+      label: `${product.option_value} ${product.price} zł`
     };
 
     formData[productId].label = product.label;

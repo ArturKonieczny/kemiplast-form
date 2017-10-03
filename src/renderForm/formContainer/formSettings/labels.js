@@ -1,4 +1,6 @@
 export const labels = {
+  product: 'Wybierz produkt:',
+  box: 'Wybierz opakowanie:',
   ammount: 'Liczba opakowań:',
   delivery: 'Sposób dostawy:',
   delName: 'Dostawa - Nazwa',
