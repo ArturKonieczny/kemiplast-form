@@ -131,7 +131,7 @@ export default class FormContainer extends React.Component {
         <table id="qb_wb_lists_contact_container" className="qbf-container">
           <tbody>
             <ProductSelector data={this.props.formData} fieldName="product" onChange={this.changeProduct}/>
-            <Selector data={this.props.formData[this.state.product].packages} fieldName="box" onChange={this.changeBox}/>
+            <Selector data={this.props.formData[this.state.product].packages} product={this.state.product} fieldName="box" onChange={this.changeBox}/>
             <Input fieldName="ammount" type="text" onChange={this.validateField} valid={this.state.ammount} />
             <Input fieldName="phone" type="text" onChange={this.validateField} valid={this.state.phone} />
             <Input fieldName="email" type="text" onChange={this.validateField} valid={this.state.email} />
