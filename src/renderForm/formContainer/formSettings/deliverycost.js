@@ -1,4 +1,4 @@
-export const delivery = {
+export const deliveryCost = {
   personal: 0,
   postOffice: 1,
   courier: 2

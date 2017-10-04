@@ -1,12 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FormValidator from 'formvalidator';
-import {SubmitButton} from './components/submitbutton.jsx';
-import {ProductSelector} from './components/productselector.jsx';
-import {Selector} from './components/selector.jsx';
-import {formSettings} from './formSettings/formSettings';
-import {delivery} from './formSettings/delivery';
-import {Input} from './components/input.jsx';
+import { formSettings, deliveryCost, deliveryOptions, labels } from './formSettings';
+import { BoxSelector, Input, ProductSelector, Selector, SubmitButton } from './components';
 
 export default class FormContainer extends React.Component {
   constructor(props) {
@@ -15,14 +11,11 @@ export default class FormContainer extends React.Component {
     this.vForm = new FormValidator(formSettings);
     this.state = {
       product: initialProduct,
-      box: this.props.formData[initialProduct].packages[0].id,
       price: this.props.formData[initialProduct].packages[0].price,
       weight: this.props.formData[initialProduct].packages[0].weight,
       ammount: true,
       ammountValue: '',
       delivery: 'personal',
-      deliveryCost: '',
-      totalCost: '',
       delName: true,
       delCity: true,
       delPostCode: true,
@@ -45,13 +38,11 @@ export default class FormContainer extends React.Component {
     this.validateForm = this.validateForm.bind(this);
     this.changeProduct = this.changeProduct.bind(this);
     this.changeBox = this.changeBox.bind(this);
-    this.changeDelivery = this.changeDelivery.bind(this);
   }
 
   changeProduct(value) {
     this.setState({
       'product': value,
-      'box': this.props.formData[value].packages[0].id,
       'price': this.props.formData[value].packages[0].price,
       'weight': this.props.formData[value].packages[0].weight
     });
@@ -67,12 +58,6 @@ export default class FormContainer extends React.Component {
     this.setState({
       'price': chosenPackage.price,
       'weight': chosenPackage.weight
-    });
-  }
-
-  changeDelivery(value) {
-    this.setState({
-      'deliveryCost': delivery[value]
     });
   }
 
@@ -109,19 +94,20 @@ export default class FormContainer extends React.Component {
     return newState.form;
   }
 
-  toggleRequired(selectElement, elements) {
+  toggleRequired(fieldName, value, elements, isRequired) {
     const newState = {};
 
-    newState[selectElement.name] = selectElement.value;
+    newState[fieldName] = value;
 
     elements.forEach((elementName) => {
       if (this.vForm.form[elementName]) {
-        const element = this.vForm.form[element];
+        const element = this.vForm.form[elementName];
 
-        element.set('isRequired', element.get('isRequired') ? false : true);
+        element.set('isRequired', isRequired);
       };
     });
 
+    newState.form = this.vForm.validateForm();
     this.setState(newState);
   }
 
@@ -130,11 +116,17 @@ export default class FormContainer extends React.Component {
       <form id="qb_wb_lists_contact" className="qbf" method="post">
         <table id="qb_wb_lists_contact_container" className="qbf-container">
           <tbody>
-            <ProductSelector data={this.props.formData} fieldName="product" onChange={this.changeProduct}/>
-            <Selector data={this.props.formData[this.state.product].packages} product={this.state.product} fieldName="box" onChange={this.changeBox}/>
-            <Input fieldName="ammount" type="text" onChange={this.validateField} valid={this.state.ammount} />
-            <Input fieldName="phone" type="text" onChange={this.validateField} valid={this.state.phone} />
-            <Input fieldName="email" type="text" onChange={this.validateField} valid={this.state.email} />
+            <ProductSelector label={labels['product']} data={this.props.formData} fieldName="product" onChange={this.changeProduct}/>
+            <BoxSelector label={labels['box']} data={this.props.formData[this.state.product].packages} product={this.state.product} fieldName="box" onChange={this.changeBox}/>
+            <Input label={labels['ammount']} fieldName="ammount" type="text" onChange={this.validateField} valid={this.state.ammount} />
+            <Selector label={labels['delivery']} fieldName="delivery" data={deliveryOptions} elements={['delName', 'delCity', 'delPostCode', 'delStreet']} onChange={this.toggleRequired} />
+            <Input label={labels['delName']} fieldName="delName" type="text" onChange={this.validateField} valid={this.state.delName} isHidden={this.state.delivery==='personal'} />
+            <Input label={labels['delCity']} fieldName="delCity" type="text" onChange={this.validateField} valid={this.state.delCity} isHidden={this.state.delivery==='personal'} />
+            <Input label={labels['delPostCode']} fieldName="delPostCode" type="text" onChange={this.validateField} valid={this.state.delPostCode} isHidden={this.state.delivery==='personal'} />
+            <Input label={labels['delStreet']} fieldName="delStreet" type="text" onChange={this.validateField} valid={this.state.delStreet} isHidden={this.state.delivery==='personal'} />
+
+            <Input label={labels['phone']} fieldName="phone" type="text" onChange={this.validateField} valid={this.state.phone} />
+            <Input label={labels['email']} fieldName="email" type="text" onChange={this.validateField} valid={this.state.email} />
             <SubmitButton form={this.state.form} submit={this.validateForm}/>
           </tbody>
         </table>

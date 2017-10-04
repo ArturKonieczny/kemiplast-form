@@ -1,2 +1,5 @@
 .invalid {
   border-color: red; }
+
+.hidden {
+  display: none; }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { labels } from '../formSettings/labels';
 
 function createOption(productName, data) {
   const product = data[productName];
@@ -24,7 +23,7 @@ export const ProductSelector = (props) => {
 
   return (
     <tr className="qbf-field qbf-field-select">
-      <td className="qbf-field-label"><span><label htmlFor={forProp}>{labels[props.fieldName]}</label></span></td>
+      <td className="qbf-field-label"><span><label htmlFor={forProp}>{props.label}</label></span></td>
       <td className="qbf-field-field">
         <select name={nameProp} className="qbf-select" id={idProp} defaultValue={props.data.chosenProduct} onChange={onChange}>
           {options}
