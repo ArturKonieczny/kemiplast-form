@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FormValidator from 'formvalidator';
-import { formSettings, deliveryCost, deliveryOptions, labels } from './formSettings';
-import { BoxSelector, Input, ProductSelector, Selector, SubmitButton } from './components';
+import { formSettings, deliveryCosts, deliveryOptions, invoiceOptions, labels, paymentOptions } from './formSettings';
+import { BoxSelector, Input, ProductSelector, Selector, SubmitButton, TableRow } from './components';
+import { calculateCost, calculateDelivery } from '../../utils';
 
 export default class FormContainer extends React.Component {
   constructor(props) {
@@ -30,7 +31,9 @@ export default class FormContainer extends React.Component {
       notes: true,
       phone: true,
       email: true,
-      form: false
+      form: false,
+      productCost: 0,
+      deliveryCost: 0
     };
 
     this.validateField = this.validateField.bind(this);
@@ -38,6 +41,7 @@ export default class FormContainer extends React.Component {
     this.validateForm = this.validateForm.bind(this);
     this.changeProduct = this.changeProduct.bind(this);
     this.changeBox = this.changeBox.bind(this);
+    this.getCosts = this.getCosts.bind(this);
   }
 
   changeProduct(value) {
@@ -45,7 +49,7 @@ export default class FormContainer extends React.Component {
       'product': value,
       'price': this.props.formData[value].packages[0].price,
       'weight': this.props.formData[value].packages[0].weight
-    });
+    }, this.getCosts());
   }
 
   changeBox(value) {
@@ -58,7 +62,7 @@ export default class FormContainer extends React.Component {
     this.setState({
       'price': chosenPackage.price,
       'weight': chosenPackage.weight
-    });
+    }, this.getCosts());
   }
 
   validateField(fieldName, value) {
@@ -75,7 +79,7 @@ export default class FormContainer extends React.Component {
       newState[fieldName + 'Value'] = value;
     }
 
-    this.setState(newState);
+    this.setState(newState, this.getCosts());
   }
 
   validateForm() {
@@ -108,7 +112,18 @@ export default class FormContainer extends React.Component {
     });
 
     newState.form = this.vForm.validateForm();
-    this.setState(newState);
+    this.setState(newState, this.getCosts());
+  }
+
+  getCosts() {
+    const productCost = calculateCost(this.state.price, this.state.ammountValue);
+    const deliveryCost = calculateDelivery(deliveryCosts[this.state.delivery], this.state.weight, this.state.ammountValue);
+    console.log(this.state.price);
+    console.log(this.state.ammountValue);
+    this.setState({
+      productCost,
+      deliveryCost
+    });
   }
 
   render() {
@@ -124,9 +139,19 @@ export default class FormContainer extends React.Component {
             <Input label={labels['delCity']} fieldName="delCity" type="text" onChange={this.validateField} valid={this.state.delCity} isHidden={this.state.delivery==='personal'} />
             <Input label={labels['delPostCode']} fieldName="delPostCode" type="text" onChange={this.validateField} valid={this.state.delPostCode} isHidden={this.state.delivery==='personal'} />
             <Input label={labels['delStreet']} fieldName="delStreet" type="text" onChange={this.validateField} valid={this.state.delStreet} isHidden={this.state.delivery==='personal'} />
-
+            <Selector label={labels['payment']} fieldName="payment" data={paymentOptions} onChange={() => {}} />
+            <Selector label={labels['invoice']} fieldName="invoice" data={invoiceOptions} elements={['fvName', 'nip', 'fvCity', 'fvPostCode', 'fvStreet']} onChange={this.toggleRequired} />
+            <Input label={labels['fvName']} fieldName="fvName" type="text" onChange={this.validateField} valid={this.state.fvName} isHidden={this.state.invoice==='no'} />
+            <Input label={labels['nip']} fieldName="nip" type="text" onChange={this.validateField} valid={this.state.nip} isHidden={this.state.invoice==='no'} />
+            <Input label={labels['fvCity']} fieldName="fvCity" type="text" onChange={this.validateField} valid={this.state.fvCity} isHidden={this.state.invoice ==='no'} />
+            <Input label={labels['fvPostCode']} fieldName="fvPostCode" type="text" onChange={this.validateField} valid={this.state.fvPostCode} isHidden={this.state.invoice ==='no'} />
+            <Input label={labels['fvStreet']} fieldName="fvStreet" type="text" onChange={this.validateField} valid={this.state.fvStreet} isHidden={this.state.invoice ==='no'} />
+            <Input label={labels['notes']} fieldName="notes" type="textarea" onChange={this.validateField} valid={this.state.notes} />
             <Input label={labels['phone']} fieldName="phone" type="text" onChange={this.validateField} valid={this.state.phone} />
             <Input label={labels['email']} fieldName="email" type="text" onChange={this.validateField} valid={this.state.email} />
+            <TableRow label={labels['productCost']} value={this.state.productCost} />
+            <TableRow label={labels['deliveryCost']} value={this.state.deliveryCost} />
+            <TableRow label={labels['totalCost']} value={this.state.productCost + this.state.deliveryCost} />
             <SubmitButton form={this.state.form} submit={this.validateForm}/>
           </tbody>
         </table>

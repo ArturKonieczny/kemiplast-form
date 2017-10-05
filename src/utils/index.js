@@ -1,3 +1,5 @@
 import getFormData from './getFormData';
+import calculateCost from './calculateCost';
+import calculateDelivery from './calculateDelivery';
 
-export { getFormData };
+export { getFormData, calculateCost, calculateDelivery };

@@ -16,5 +16,8 @@ export const labels = {
   fvStreet: 'Faktura - Ulica:',
   notes: 'Uwagi dodatkowe:',
   phone: 'Numer telefonu:',
-  email: 'E-mail:'
+  email: 'E-mail:',
+  productCost: 'Wartość zamówienia:',
+  deliveryCost: 'Szacowana cena dostawy:',
+  totalCost: 'Razem:'
 };
