@@ -43,10 +43,12 @@ export default class FormContainer extends React.Component {
   }
 
   changeProduct(value) {
-    const price = this.props.formData[value].packages[0].price;
-    const weight = this.props.formData[value].packages[0].weight;
+    const chosenPackage = this.props.formData[value].packages[0];
+    const { price, weight, id } = chosenPackage;
+
     this.setState({
       'product': value,
+      'box': id,
       'productCost': calculateCost(price, this.state.ammountValue),
       'deliveryCost': calculateDelivery(deliveryCosts[this.state.delivery], weight, this.state.ammountValue)
     });
@@ -80,7 +82,6 @@ export default class FormContainer extends React.Component {
     newState.form = this.vForm.validateForm();
 
     if (fieldName === 'ammount') {
-      console.log(this.state.box);
       const packages = this.props.formData[this.state.product].packages;
       const chosenPackage = packages.find((element) => {
         return element.id === this.state.box;
