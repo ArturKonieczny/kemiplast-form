@@ -12,8 +12,7 @@ export default class FormContainer extends React.Component {
     this.vForm = new FormValidator(formSettings);
     this.state = {
       product: initialProduct,
-      price: this.props.formData[initialProduct].packages[0].price,
-      weight: this.props.formData[initialProduct].packages[0].weight,
+      box: this.props.formData[initialProduct].packages[0].id,
       ammount: true,
       ammountValue: '',
       delivery: 'personal',
@@ -41,15 +40,16 @@ export default class FormContainer extends React.Component {
     this.validateForm = this.validateForm.bind(this);
     this.changeProduct = this.changeProduct.bind(this);
     this.changeBox = this.changeBox.bind(this);
-    this.getCosts = this.getCosts.bind(this);
   }
 
   changeProduct(value) {
+    const price = this.props.formData[value].packages[0].price;
+    const weight = this.props.formData[value].packages[0].weight;
     this.setState({
       'product': value,
-      'price': this.props.formData[value].packages[0].price,
-      'weight': this.props.formData[value].packages[0].weight
-    }, this.getCosts());
+      'productCost': calculateCost(price, this.state.ammountValue),
+      'deliveryCost': calculateDelivery(deliveryCosts[this.state.delivery], weight, this.state.ammountValue)
+    });
   }
 
   changeBox(value) {
@@ -59,10 +59,14 @@ export default class FormContainer extends React.Component {
       return element.id === value;
     });
 
+    const price = chosenPackage.price;
+    const weight = chosenPackage.weight;
+
     this.setState({
-      'price': chosenPackage.price,
-      'weight': chosenPackage.weight
-    }, this.getCosts());
+      'box': value,
+      'productCost': calculateCost(price, this.state.ammountValue),
+      'deliveryCost': calculateDelivery(deliveryCosts[this.state.delivery], weight, this.state.ammountValue)
+    });
   }
 
   validateField(fieldName, value) {
@@ -76,10 +80,19 @@ export default class FormContainer extends React.Component {
     newState.form = this.vForm.validateForm();
 
     if (fieldName === 'ammount') {
+      console.log(this.state.box);
+      const packages = this.props.formData[this.state.product].packages;
+      const chosenPackage = packages.find((element) => {
+        return element.id === this.state.box;
+      });
+      const price = chosenPackage.price;
+      const weight = chosenPackage.weight;
       newState[fieldName + 'Value'] = value;
+      newState['productCost'] = calculateCost(price, value);
+      newState['deliveryCost'] = calculateDelivery(deliveryCosts[this.state.delivery], weight, value);
     }
 
-    this.setState(newState, this.getCosts());
+    this.setState(newState);
   }
 
   validateForm() {
@@ -111,19 +124,15 @@ export default class FormContainer extends React.Component {
       };
     });
 
-    newState.form = this.vForm.validateForm();
-    this.setState(newState, this.getCosts());
-  }
+    if (fieldName === 'delivery') {
+      const weight = this.props.formData[this.state.box].packages[this.state.box].weight;
+      const ammount = this.state.ammountValue;
 
-  getCosts() {
-    const productCost = calculateCost(this.state.price, this.state.ammountValue);
-    const deliveryCost = calculateDelivery(deliveryCosts[this.state.delivery], this.state.weight, this.state.ammountValue);
-    console.log(this.state.price);
-    console.log(this.state.ammountValue);
-    this.setState({
-      productCost,
-      deliveryCost
-    });
+      newState.deliveryCost = calculateDelivery(deliveryCosts[value], weight, value);
+    }
+
+    newState.form = this.vForm.validateForm();
+    this.setState(newState);
   }
 
   render() {
