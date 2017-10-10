@@ -8,7 +8,7 @@ function init() {
   if (formContainer) {
     const formData = getFormData();
 
-    renderForm(formData, formContainer);
+    renderForm(formData, window.app.deliveryOptions, formContainer);
   }
 }
 

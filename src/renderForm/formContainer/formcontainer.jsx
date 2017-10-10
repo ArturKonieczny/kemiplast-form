@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FormValidator from 'formvalidator';
-import { formSettings, deliveryCosts, deliveryOptions, invoiceOptions, labels, paymentOptions } from './formSettings';
+import { formSettings, invoiceOptions, labels, paymentOptions } from './formSettings';
 import { BoxSelector, Input, ProductSelector, Selector, SubmitButton, TableRow } from './components';
-import { calculateCost, calculateDelivery } from '../../utils';
+import { calculateCost, calculateDelivery, displayCurrency, calculateTotalCost } from '../../utils';
 
 export default class FormContainer extends React.Component {
   constructor(props) {
@@ -45,12 +45,14 @@ export default class FormContainer extends React.Component {
   changeProduct(value) {
     const chosenPackage = this.props.formData[value].packages[0];
     const { price, weight, id } = chosenPackage;
-
+    const deliveryOption = this.props.deliveryOptions.find((element) => {
+      return element.id === this.state.delivery;
+    });
     this.setState({
       'product': value,
       'box': id,
-      'productCost': calculateCost(price, this.state.ammountValue),
-      'deliveryCost': calculateDelivery(deliveryCosts[this.state.delivery], weight, this.state.ammountValue)
+      'productCost': calculateCost(price, this.state.ammountValue, this.state.ammount),
+      'deliveryCost': calculateDelivery(deliveryOption, weight, this.state.ammountValue, this.state.ammount)
     });
   }
 
@@ -63,11 +65,13 @@ export default class FormContainer extends React.Component {
 
     const price = chosenPackage.price;
     const weight = chosenPackage.weight;
-
+    const deliveryOption = this.props.deliveryOptions.find((element) => {
+      return element.id === this.state.delivery;
+    });
     this.setState({
       'box': value,
-      'productCost': calculateCost(price, this.state.ammountValue),
-      'deliveryCost': calculateDelivery(deliveryCosts[this.state.delivery], weight, this.state.ammountValue)
+      'productCost': calculateCost(price, this.state.ammountValue, this.state.ammount),
+      'deliveryCost': calculateDelivery(deliveryOption, weight, this.state.ammountValue, this.state.ammount)
     });
   }
 
@@ -88,9 +92,12 @@ export default class FormContainer extends React.Component {
       });
       const price = chosenPackage.price;
       const weight = chosenPackage.weight;
+      const deliveryOption = this.props.deliveryOptions.find((element) => {
+        return element.id === this.state.delivery;
+      });
       newState[fieldName + 'Value'] = value;
-      newState['productCost'] = calculateCost(price, value);
-      newState['deliveryCost'] = calculateDelivery(deliveryCosts[this.state.delivery], weight, value);
+      newState['productCost'] = calculateCost(price, value, newState[fieldName]);
+      newState['deliveryCost'] = calculateDelivery(deliveryOption, weight, value, newState[fieldName]);
     }
 
     this.setState(newState);
@@ -126,10 +133,16 @@ export default class FormContainer extends React.Component {
     });
 
     if (fieldName === 'delivery') {
-      const weight = this.props.formData[this.state.box].packages[this.state.box].weight;
       const ammount = this.state.ammountValue;
-
-      newState.deliveryCost = calculateDelivery(deliveryCosts[value], weight, value);
+      const packages = this.props.formData[this.state.product].packages;
+      const chosenPackage = packages.find((element) => {
+        return element.id === this.state.box;
+      });
+      const weight = chosenPackage.weight;
+      const deliveryOption = this.props.deliveryOptions.find((element) => {
+        return element.id === value;
+      });
+      newState.deliveryCost = calculateDelivery(deliveryOption, weight, this.state.ammountValue, this.state.ammount);
     }
 
     newState.form = this.vForm.validateForm();
@@ -144,7 +157,7 @@ export default class FormContainer extends React.Component {
             <ProductSelector label={labels['product']} data={this.props.formData} fieldName="product" onChange={this.changeProduct}/>
             <BoxSelector label={labels['box']} data={this.props.formData[this.state.product].packages} product={this.state.product} fieldName="box" onChange={this.changeBox}/>
             <Input label={labels['ammount']} fieldName="ammount" type="text" onChange={this.validateField} valid={this.state.ammount} />
-            <Selector label={labels['delivery']} fieldName="delivery" data={deliveryOptions} elements={['delName', 'delCity', 'delPostCode', 'delStreet']} onChange={this.toggleRequired} />
+            <Selector label={labels['delivery']} fieldName="delivery" data={this.props.deliveryOptions} elements={['delName', 'delCity', 'delPostCode', 'delStreet']} onChange={this.toggleRequired} />
             <Input label={labels['delName']} fieldName="delName" type="text" onChange={this.validateField} valid={this.state.delName} isHidden={this.state.delivery==='personal'} />
             <Input label={labels['delCity']} fieldName="delCity" type="text" onChange={this.validateField} valid={this.state.delCity} isHidden={this.state.delivery==='personal'} />
             <Input label={labels['delPostCode']} fieldName="delPostCode" type="text" onChange={this.validateField} valid={this.state.delPostCode} isHidden={this.state.delivery==='personal'} />
@@ -159,9 +172,9 @@ export default class FormContainer extends React.Component {
             <Input label={labels['notes']} fieldName="notes" type="textarea" onChange={this.validateField} valid={this.state.notes} />
             <Input label={labels['phone']} fieldName="phone" type="text" onChange={this.validateField} valid={this.state.phone} />
             <Input label={labels['email']} fieldName="email" type="text" onChange={this.validateField} valid={this.state.email} />
-            <TableRow label={labels['productCost']} value={this.state.productCost} />
-            <TableRow label={labels['deliveryCost']} value={this.state.deliveryCost} />
-            <TableRow label={labels['totalCost']} value={this.state.productCost + this.state.deliveryCost} />
+            <TableRow label={labels['productCost']} value={displayCurrency(this.state.productCost)} />
+            <TableRow label={labels['deliveryCost']} value={isNaN(this.state.deliveryCost) ? this.state.deliveryCost : displayCurrency(this.state.deliveryCost)} />
+            <TableRow label={labels['totalCost']} value={calculateTotalCost(this.state.productCost, this.state.deliveryCost)} />
             <SubmitButton form={this.state.form} submit={this.validateForm}/>
           </tbody>
         </table>
