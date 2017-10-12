@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import FormValidator from 'formvalidator';
 import { formSettings, invoiceOptions, labels, paymentOptions } from './formSettings';
-import { BoxSelector, Input, ProductSelector, Selector, SubmitButton, TableRow } from './components';
+import { BoxSelector, Input, ProductSelector, Selector, SubmitButton, TableRow, TransferDetails } from './components';
 import { calculateCost, calculateDelivery, displayCurrency, calculateTotalCost } from '../../utils';
 
 export default class FormContainer extends React.Component {
@@ -162,7 +162,8 @@ export default class FormContainer extends React.Component {
             <Input label={labels['delCity']} fieldName="delCity" type="text" onChange={this.validateField} valid={this.state.delCity} isHidden={this.state.delivery==='personal'} />
             <Input label={labels['delPostCode']} fieldName="delPostCode" type="text" onChange={this.validateField} valid={this.state.delPostCode} isHidden={this.state.delivery==='personal'} />
             <Input label={labels['delStreet']} fieldName="delStreet" type="text" onChange={this.validateField} valid={this.state.delStreet} isHidden={this.state.delivery==='personal'} />
-            <Selector label={labels['payment']} fieldName="payment" data={paymentOptions} onChange={() => {}} />
+            <Selector label={labels['payment']} fieldName="payment" data={paymentOptions} onChange={this.toggleRequired} elements={[]} />
+            <TransferDetails label={labels['transferDetails']} value={this.props.transferDetails} hidden = {!(this.state.payment === 'transfer')}/>
             <Selector label={labels['invoice']} fieldName="invoice" data={invoiceOptions} elements={['fvName', 'nip', 'fvCity', 'fvPostCode', 'fvStreet']} onChange={this.toggleRequired} />
             <Input label={labels['fvName']} fieldName="fvName" type="text" onChange={this.validateField} valid={this.state.fvName} isHidden={this.state.invoice==='no'} />
             <Input label={labels['nip']} fieldName="nip" type="text" onChange={this.validateField} valid={this.state.nip} isHidden={this.state.invoice==='no'} />

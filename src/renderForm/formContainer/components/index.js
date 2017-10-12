@@ -4,6 +4,7 @@ import { ProductSelector } from './productselector.jsx';
 import { Selector } from './selector.jsx';
 import { SubmitButton } from './submitbutton.jsx';
 import { TableRow } from './tablerow.jsx';
+import { TransferDetails } from './transferdetails.jsx';
 
 export {
   BoxSelector,
@@ -11,5 +12,6 @@ export {
   ProductSelector,
   Selector,
   SubmitButton,
-  TableRow
+  TableRow,
+  TransferDetails
 };
